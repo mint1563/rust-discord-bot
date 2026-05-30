@@ -1,48 +1,50 @@
-use serenity::async_trait;
-use serenity::model::channel::Message;
-use serenity::model::gateway::Ready;
-use serenity::prelude::*;
+use poise::serenity_prelude as serenity;
 use std::env;
 
-struct Handler;
+// ボット内で共有したいデータ（状態管理など）があればここに定義します
+struct Data {}
+type Error = Box<dyn std::error::Error + Send + Sync>;
+type Context<'a> = poise::Context<'a, Data, Error>;
 
-#[async_trait]
-impl EventHandler for Handler {
-    async fn message(&self, ctx: Context, msg: Message) {
-        if msg.author.bot {
-            return;
-        }
-
-        if msg.content == "!ping" {
-            if let Err(why) = msg.channel_id.say(&ctx.http, "Pong!").await {
-                println!("メッセージ送信エラー: {:?}", why);
-            }
-        }
-    }
-
-    async fn ready(&self, _: Context, ready: Ready) {
-        println!("{} としてログインしました！", ready.user.name);
-    }
+/// ユーザーに「Pong!」と返すシンプルなスラッシュコマンド
+#[poise::command(slash_command)]
+async fn ping(ctx: Context<'_>) -> Result<(), Error> {
+    ctx.say("Pong!").await?;
+    Ok(())
 }
 
 #[tokio::main]
 async fn main() {
-    // 💡 .env ファイルから環境変数を読み込む（この1行を追加）
-    dotenvy::dotenv().expect(".env ファイルの読み込みに失敗しました");
+    // .env ファイルから環境変数を読み込み
+    dotenvy::dotenv().ok();
 
-    // これで自動的に .env 内の DISCORD_TOKEN が取得できるようになります
-    let token = env::var("DISCORD_TOKEN").expect("環境変数 'DISCORD_TOKEN' が設定されていません");
+    // Discordのトークンを取得
+    let token = env::var("DISCORD_TOKEN").expect("Expected a token in the environment");
 
-    let intents = GatewayIntents::GUILD_MESSAGES
-        | GatewayIntents::DIRECT_MESSAGES
-        | GatewayIntents::MESSAGE_CONTENT;
+    // ボットのインテント（権限）を設定
+    let intents = serenity::GatewayIntents::non_privileged();
 
-    let mut client = Client::builder(&token, intents)
-        .event_handler(Handler)
-        .await
-        .expect("クライアントの作成に失敗しました");
+    // Poise のフレームワーク設定
+    let framework = poise::Framework::builder()
+        .options(poise::FrameworkOptions {
+            // ここに登録したいコマンドを追加していきます
+            commands: vec![ping()],
+            ..Default::default()
+        })
+        .setup(|ctx, _ready, _framework| {
+            Box::pin(async move {
+                // グローバル（すべてのサーバー）にスラッシュコマンドを登録
+                // ※反映に数分かかる場合があります。開発時は guild コマンドとしての登録がおすすめです。
+                poise::builtins::register_globally(ctx, &_framework.options().commands).await?;
+                Ok(Data {})
+            })
+        })
+        .build();
 
-    if let Err(why) = client.start().await {
-        println!("クライアントの起動エラー: {:?}", why);
-    }
+    // クライアントを起動
+    let client = serenity::ClientBuilder::new(token, intents)
+        .framework(framework)
+        .await;
+
+    client.unwrap().start().await.unwrap();
 }

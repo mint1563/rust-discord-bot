@@ -8,3 +8,4 @@ serenity = { version = "0.12", features = ["client", "gateway", "model", "standa
 tokio = { version = "1", features = ["full"] }
 # 以下の1行を追加します
 dotenvy = "0.15"
+poise = "0.6.2"
