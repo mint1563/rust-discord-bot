@@ -1,0 +1,10 @@
+[package]
+name = "rust-discord-bot"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+serenity = { version = "0.12", features = ["client", "gateway", "model", "standard_framework"] }
+tokio = { version = "1", features = ["full"] }
+# 以下の1行を追加します
+dotenvy = "0.15"
