@@ -6,6 +6,23 @@ struct Data {}
 type Error = Box<dyn std::error::Error + Send + Sync>;
 type Context<'a> = poise::Context<'a, Data, Error>;
 
+async fn event_handler(
+    ctx: &serenity::Context,
+    event: &serenity::FullEvent,
+    _framework: poise::FrameworkContext<'_, Data, Error>,
+    _data: &Data,
+) -> Result<(), Error> {
+    match event {
+        serenity::FullEvent::Message { new_message } => {
+            if new_message.content == "!ping" && !new_message.author.bot {
+                new_message.channel_id.say(&ctx.http, "Pong!").await?;
+            }
+        }
+        _ => {}
+    }
+    Ok(())
+}
+
 /// ユーザーに「Pong!」と返すシンプルなスラッシュコマンド
 #[poise::command(slash_command)]
 async fn ping(ctx: Context<'_>) -> Result<(), Error> {
@@ -41,6 +58,9 @@ async fn main() {
         .options(poise::FrameworkOptions {
             // ここに登録したいコマンドを追加していきます
             commands: vec![ping(), text()],
+            event_handler: |ctx, event, framework, data| {
+                Box::pin(event_handler(ctx, event, framework, data))
+            },
             ..Default::default()
         })
         .setup(|ctx, _ready, _framework| {
