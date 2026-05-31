@@ -1,2 +1,1 @@
-cargo build --release --bin background
-nohup target/release/background > background.log 2>&1 &
+nohup cargo run --release > background.log 2>&1 & 
