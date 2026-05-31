@@ -13,35 +13,13 @@ async fn ping(ctx: Context<'_>) -> Result<(), Error> {
     Ok(())
 }
 
-// poise 用のイベントハンドラ関数
-async fn event_handler(
-    ctx: &serenity::Context,
-    event: &serenity::FullEvent,
-    _framework: poise::FrameworkContext<'_, Data, Error>,
-    _data: &Data,
+/// 入力した文をそのまま出力するスラッシュコマンド
+#[poise::command(slash_command)]
+async fn text(
+    ctx: Context<'_>,
+    #[description = "出力したい文章"] text: String,
 ) -> Result<(), Error> {
-    match event {
-        // ボットの起動が完了したとき
-        serenity::FullEvent::Ready { data_about_bot } => {
-            println!("{} としてログインしました！", data_about_bot.user.name);
-        }
-        // メッセージが投稿されたとき
-        serenity::FullEvent::Message { new_message } => {
-            // メッセージ送信者がボット自身なら無視
-            if new_message.author.bot {
-                return Ok(());
-            }
-
-            // 「!ping」というメッセージに反応
-            if new_message.content == "!ping" {
-                if let Err(why) = new_message.channel_id.say(&ctx.http, "Pong!").await {
-                    println!("メッセージ送信エラー: {:?}", why);
-                }
-            }
-        }
-        // 他に検知したいイベントがあればここに追加できます
-        _ => {}
-    }
+    ctx.say(text).await?;
     Ok(())
 }
 
@@ -61,12 +39,8 @@ async fn main() {
     // Poise のフレームワーク設定
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {
-            // スラッシュコマンドを登録
-            commands: vec![ping()],
-            // 通常のイベントハンドラをここに登録
-            event_handler: |ctx, event, framework, data| {
-                Box::pin(event_handler(ctx, event, framework, data))
-            },
+            // ここに登録したいコマンドを追加していきます
+            commands: vec![ping(), text()],
             ..Default::default()
         })
         .setup(|ctx, _ready, _framework| {
