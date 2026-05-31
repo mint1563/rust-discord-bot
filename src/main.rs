@@ -13,6 +13,16 @@ async fn ping(ctx: Context<'_>) -> Result<(), Error> {
     Ok(())
 }
 
+/// 入力した文をそのまま出力するスラッシュコマンド
+#[poise::command(slash_command)]
+async fn text(
+    ctx: Context<'_>,
+    #[description = "出力したい文章"] text: String,
+) -> Result<(), Error> {
+    ctx.say(text).await?;
+    Ok(())
+}
+
 #[tokio::main]
 async fn main() {
     // .env ファイルから環境変数を読み込み
@@ -28,7 +38,7 @@ async fn main() {
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {
             // ここに登録したいコマンドを追加していきます
-            commands: vec![ping()],
+            commands: vec![ping(), text()],
             ..Default::default()
         })
         .setup(|ctx, _ready, _framework| {
