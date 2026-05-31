@@ -13,9 +13,22 @@ async fn event_handler(
     _data: &Data,
 ) -> Result<(), Error> {
     match event {
+        // ボットの起動が完了したとき
+        serenity::FullEvent::Ready { data_about_bot } => {
+            println!("{} としてログインしました！", data_about_bot.user.name);
+        }
+        // メッセージが投稿されたとき
         serenity::FullEvent::Message { new_message } => {
-            if new_message.content == "!ping" && !new_message.author.bot {
-                new_message.channel_id.say(&ctx.http, "Pong!").await?;
+            // メッセージ送信者がボット自身なら無視
+            if new_message.author.bot {
+                return Ok(());
+            }
+
+            // 「!ping」というメッセージに反応
+            if new_message.content == "!ping" {
+                if let Err(why) = new_message.channel_id.say(&ctx.http, "Pong!").await {
+                    println!("メッセージ送信エラー: {:?}", why);
+                }
             }
         }
         _ => {}
