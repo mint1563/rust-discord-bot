@@ -2,3 +2,6 @@
 
 .env
 background.log
+background.sh
+pkill.sh
+ps-check.sh
