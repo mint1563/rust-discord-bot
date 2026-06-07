@@ -7,10 +7,12 @@ Rust と [poise](https://github.com/serenity-rs/poise) / [serenity](https://gith
 現在、以下のコマンドと機能が実装されています。
 
 ### スラッシュコマンド
+
 - `/ping` : ボットが「Pong!」と返信します。
 - `/text <text>` : 入力したメッセージをそのままオウム返しします。
 
 ### テキストコマンド
+
 - `!ping` : チャットで `!ping` と送信すると「Pong!」と返信します。
 
 ## 前提条件
