@@ -1,3 +1,5 @@
+extern crate rust_llm;
+
 use poise::serenity_prelude as serenity;
 use std::env;
 
