@@ -102,7 +102,7 @@ async fn main() {
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {
             // ここに登録したいコマンドを追加していきます
-            commands: vec![ping(), text()],
+            commands: vec![ping(), text(), ask()],
             event_handler: |ctx, event, framework, data| {
                 Box::pin(event_handler(ctx, event, framework, data))
             },
