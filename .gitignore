@@ -5,3 +5,5 @@ background.log
 background.sh
 pkill.sh
 ps-check.sh
+run.sh
+thinking.log
