@@ -55,6 +55,36 @@ async fn text(
     Ok(())
 }
 
+/// rust-llmを使ってAIに質問します
+#[poise::command(slash_command)]
+async fn ask(
+    ctx: Context<'_>,
+    #[description = "AIに送信するプロンプト"] prompt: String,
+) -> Result<(), Error> {
+    // LLMの処理は時間がかかることが多いため、Discordの3秒ルール（タイムアウト）を
+    // 回避するために「考え中...」状態を先に送信します (defer)
+    ctx.defer().await?;
+
+    // -----------------------------------------------------------------------
+    // TODO: ここでご自身の rust-llm の関数を呼び出します。
+    // リポジトリの実際の構成に合わせて書き換えてください。
+    //
+    // 【実装例】
+    // let response = rust_llm::generate(&prompt).await?;
+    // -----------------------------------------------------------------------
+
+    // 以下はコンパイルを通すための仮のレスポンスです。実際の実装に置き換えてください。
+    let response = format!(
+        "「{}」ですね。これはrust-llmからの応答のモックです。",
+        prompt
+    );
+
+    // 処理が完了したら、結果をユーザーに返信します
+    ctx.say(response).await?;
+
+    Ok(())
+}
+
 #[tokio::main]
 async fn main() {
     // .env ファイルから環境変数を読み込み
