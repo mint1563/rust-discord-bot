@@ -1917,7 +1917,7 @@ dependencies = [
 [[package]]
 name = "rust-llm"
 version = "0.1.0"
-source = "git+https://github.com/mint1563/rust-llm#63a6c6082fd8ee9378b953286fbb85c63e64ff32"
+source = "git+https://github.com/mint1563/rust-llm.git#63a6c6082fd8ee9378b953286fbb85c63e64ff32"
 dependencies = [
  "candle-core",
  "candle-nn",

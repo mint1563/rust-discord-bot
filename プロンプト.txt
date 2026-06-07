@@ -1,2 +1,2 @@
 RustでDiscord botを作成してください
-私が作成したrust-llmの関数をDiscord botのスラッシュコマンドで使用できるように追加してください
+私が作成したrust-llmの関数をDiscord botのスラッシュコマンドで使用できるように追加してください、https://github.com/mint1563/rust-llm.git にリポジトリがあるので参考にしてください
