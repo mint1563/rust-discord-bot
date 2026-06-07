@@ -1,4 +1,6 @@
-extern crate rust_llm;
+﻿import sys
+
+content = r'''extern crate rust_llm;
 
 use poise::serenity_prelude as serenity;
 use std::env;
@@ -26,16 +28,16 @@ async fn event_handler(
 ) -> Result<(), Error> {
     match event {
         serenity::FullEvent::Ready { data_about_bot } => {
-            println!("{} としてログインしました！", data_about_bot.user.name);
+            println!(\"{} としてログインしました！\", data_about_bot.user.name);
         }
         serenity::FullEvent::Message { new_message } => {
             if new_message.author.bot {
                 return Ok(());
             }
 
-            if new_message.content == "!ping" {
-                if let Err(why) = new_message.channel_id.say(&ctx.http, "Pong!").await {
-                    println!("メッセージ送信エラー: {:?}", why);
+            if new_message.content == \"!ping\" {
+                if let Err(why) = new_message.channel_id.say(&ctx.http, \"Pong!\").await {
+                    println!(\"メッセージ送信エラー: {:?}\", why);
                 }
             }
         }
@@ -46,14 +48,14 @@ async fn event_handler(
 
 #[poise::command(slash_command)]
 async fn ping(ctx: Context<'_>) -> Result<(), Error> {
-    ctx.say("Pong!").await?;
+    ctx.say(\"Pong!\").await?;
     Ok(())
 }
 
 #[poise::command(slash_command)]
 async fn text(
     ctx: Context<'_>,
-    #[description = "出力したい文章"] text: String,
+    #[description = \"出力したい文章\"] text: String,
 ) -> Result<(), Error> {
     ctx.say(text).await?;
     Ok(())
@@ -62,7 +64,7 @@ async fn text(
 #[poise::command(slash_command)]
 async fn ask(
     ctx: Context<'_>,
-    #[description = "AIに送信するプロンプト"] prompt: String,
+    #[description = \"AIに送信するプロンプト\"] prompt: String,
 ) -> Result<(), Error> {
     ctx.defer().await?;
 
@@ -72,12 +74,12 @@ async fn ask(
         match chat(&data.transformer, &data.device, &mut tokenizer, &prompt) {
             Ok(res) => {
                 if res.is_empty() {
-                    "（AIは何も返答しませんでした）".to_string()
+                    \"（AIは何も返答しませんでした）\".to_string()
                 } else {
                     res
                 }
             }
-            Err(e) => format!("エラーが発生しました: {}", e),
+            Err(e) => format!(\"エラーが発生しました: {}\", e),
         }
     };
 
@@ -90,7 +92,7 @@ async fn ask(
 async fn main() {
     dotenvy::dotenv().ok();
 
-    let token = env::var("DISCORD_TOKEN").expect("Expected a token in the environment");
+    let token = env::var(\"DISCORD_TOKEN\").expect(\"Expected a token in the environment\");
 
     let intents =
         serenity::GatewayIntents::non_privileged() | serenity::GatewayIntents::MESSAGE_CONTENT;
@@ -126,7 +128,11 @@ async fn main() {
     let mut client = serenity::ClientBuilder::new(token, intents)
         .framework(framework)
         .await
-        .expect("クライアントの作成に失敗しました");
+        .expect(\"クライアントの作成に失敗しました\");
 
     client.start().await.unwrap();
 }
+'''
+
+with open('src/main.rs', 'w', encoding='utf-8') as f:
+    f.write(content)
